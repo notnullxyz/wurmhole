@@ -12,7 +12,6 @@ class Loader
     private $sqldir;
     private $conn;
     private $logblock;
-    private $only;  // allowed databases
 
     public function __construct(string $sqldir, bool $donotlog = false)
     {
@@ -25,7 +24,6 @@ class Loader
             throw new Exception("sqldir \"$sqldir\" does not exist.");
         }
 
-        $this->only = ['wurmplayers', 'wurmlogin'];     // safety fuse for allowed db's
         $this->sqldir = $sqldir;
         $this->log("Set sqldir to $sqldir");
 
@@ -52,8 +50,9 @@ class Loader
     {
         function allowed($test)
         {
+            $only = ['wurmplayers', 'wurmlogin'];     // safety fuse for allowed db's
             $pathparts = pathinfo($test);
-            if (in_array($pathparts['filename'], $this->only)) {
+            if (in_array($pathparts['filename'], $only)) {
                 return true;
             }
             return false;
