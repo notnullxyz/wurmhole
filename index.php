@@ -7,8 +7,11 @@
 require_once('Loader.php');
 require_once('SkillNumbers.php');
 
-const SQLITE_DIR = "sql/";
-const BLOCK_LOGGING = true;
+/**
+ * Set these as required.
+ */
+const SQLITE_DIR = "sql/";      // where the wurm db sqlite files are located
+const BLOCK_LOGGING = true;     // whether logging is needed. This is not good really, leave on true
 
 $loader = new Loader(SQLITE_DIR, BLOCK_LOGGING);
 $skillnumbers = new SkillNumbers();
@@ -16,7 +19,6 @@ $skillnumbers = new SkillNumbers();
 $loader->connect('wurmplayers.db');
 
 $players = $skill = [];
-
 $players = $loader->ex("SELECT wurmid,name,playingtime,stamina,hunger,nutrition,thirst,ipaddress,plantedsign,kingdom,money,sleep,calories,carbs,fats,proteins FROM PLAYERS");
 
 // SKILLS
@@ -54,7 +56,7 @@ $players = $loader->ex("SELECT wurmid,name,playingtime,stamina,hunger,nutrition,
 */
 
 print "<form method='GET' id='updateform'> <table>";
-	print "<tr>
+print "<tr>
 	<th>Player</th>
 	<th>Calories</th>
 	<th>Carbs</th>
@@ -65,23 +67,19 @@ print "<form method='GET' id='updateform'> <table>";
 	</tr>";
 
 foreach ($players as $player) {
-	$playerid = $player['WURMID'];
-	$playername = $player['NAME'];
-	$calories = $player['CALORIES'];
-	$carbs = $player['CARBS'];
-	$fats = $player['FATS'];
-	$proteins = $player['PROTEINS'];
+    $playerid = $player['WURMID'];
+    $playername = $player['NAME'];
+    $calories = $player['CALORIES'];
+    $carbs = $player['CARBS'];
+    $fats = $player['FATS'];
+    $proteins = $player['PROTEINS'];
     $plantedsign = $player['PLANTEDSIGN'];
-    
-    $skills =  $loader->ex("SELECT number,value FROM SKILLS where owner = $playerid order by number");
 
-	print "<tr><td>$playername</td>";
-	print "<td><input type='text' name='calories' value='$calories'></td>"
-		."<td><input type='text' name='carbs' value='$carbs'></td>"
-		."<td><input type='text' name='fats' value='$fats'></td>"
-		."<td><input type='text' name='proteins' value='$proteins'></td>"
-		."<td><input type='text' name='plantedsign' value='$plantedsign'></td>";
-        
+    $skills = $loader->ex("SELECT number,value FROM SKILLS where owner = $playerid order by number");
+
+    print "<tr><td>$playername</td>";
+    print "<td><input type='text' name='calories' value='$calories'></td>" . "<td><input type='text' name='carbs' value='$carbs'></td>" . "<td><input type='text' name='fats' value='$fats'></td>" . "<td><input type='text' name='proteins' value='$proteins'></td>" . "<td><input type='text' name='plantedsign' value='$plantedsign'></td>";
+
     foreach ($skills as $skill) {
         $number = $skill['NUMBER'];
         $value = $skill['VALUE'];
@@ -92,7 +90,8 @@ foreach ($players as $player) {
     }
 
     //print "<td><button type='button' form='updateform'>patch</button></td>";
-	print "</tr>";
+    print "</tr>";
 }
 
 print "</table></form>";
+

@@ -1,48 +1,59 @@
 <?php
 
-class Loader {
+/**
+ * Class Loader
+ * Responsible for loading and abstracting sqlite data.
+ *
+ */
+class Loader
+{
 
     private $databases;
     private $sqldir;
     private $conn;
-	private $logblock;
+    private $logblock;
+    private $only;  // allowed databases
 
-    public function __construct(string $sqldir, bool $donotlog = false) {
+    public function __construct(string $sqldir, bool $donotlog = false)
+    {
 
-		$this->logblock = $donotlog;
+        $this->logblock = $donotlog;
 
-		$this->log("construction for sqldir: '$sqldir'");
+        $this->log("construction for sqldir: '$sqldir'");
         if (!file_exists($sqldir)) {
-			$this->log("non-existent sqldir $sqldir");
+            $this->log("non-existent sqldir $sqldir");
             throw new Exception("sqldir \"$sqldir\" does not exist.");
         }
 
+        $this->only = ['wurmplayers', 'wurmlogin'];     // safety fuse for allowed db's
         $this->sqldir = $sqldir;
-		$this->log("Set sqldir to $sqldir");
+        $this->log("Set sqldir to $sqldir");
 
         $dbfiles = scandir($sqldir);
         $this->databases = [];
         $this->databases = $this->filterAllowables($dbfiles);
     }
 
-	/**
-	 * not cool, but hack logging is easier...
-	 */
-	private function log(string $msg) {
-		if (!$this->logblock) {
-			$date = date("Y/m/d H:i:s");
-			print "<br>$date :: $msg";
-		}
-	}
-	
-	/**
-	 * Simple filter for checking what is being opened.
-	 */
-    private function filterAllowables(array $files) : array {
-        function allowed($test) {
+    /**
+     * not cool, but hack logging is easier...
+     */
+    private function log(string $msg)
+    {
+        if (!$this->logblock) {
+            $date = date("Y/m/d H:i:s");
+            print "<br>$date :: $msg";
+        }
+    }
+
+    /**
+     * Simple filter for checking what is being opened.
+     */
+    private function filterAllowables(array $files): array
+    {
+        function allowed($test)
+        {
             $pathparts = pathinfo($test);
-            $only = ['wurmplayers', 'wurmlogin'];
-            if (in_array($pathparts['filename'], $only)) {
+            if (in_array($pathparts['filename'], $this->only)) {
                 return true;
             }
             return false;
@@ -51,41 +62,48 @@ class Loader {
         return array_filter(array_values($files), "allowed");
     }
 
-    public function connect($allowedDb) {
+    /**
+     * Connect to the specified database, which can only be an allowed db.
+     * @param $allowedDb
+     * @throws Exception
+     */
+    public function connect($allowedDb)
+    {
         if (!in_array($allowedDb, $this->databases)) {
-			$this->log("DB '$allowedDb' is not allowed.");
+            $this->log("DB '$allowedDb' is not allowed.");
             throw new Exception('Security Violation: $allowedDb is not allowed');
         }
         $open = $this->sqldir . $allowedDb;
-		
+
         try {
-			$this->log("Going to open '$open' now...");
-			$this->conn = new PDO('sqlite:' . $open);
-			$this->log("Seemed like '$open' was connected OK");
+            $this->log("Going to open '$open' now...");
+            $this->conn = new PDO('sqlite:' . $open);
+            $this->log("Seemed like '$open' was connected OK");
         } catch (PDOException $e) {
-			$this->log("Failed opening the db '$open' because: " . $e->getMessage());
+            $this->log("Failed opening the db '$open' because: " . $e->getMessage());
             $msg = "PDOException on Connection: " . $e->getMessage();
             throw $e;
         }
     }
 
-    public function ex($query) {
-		$this->log("Got query '$query'");
-		
+    public function ex($query)
+    {
+        $this->log("Got query '$query'");
+
         try {
-			$statement = $this->conn->prepare($query);
+            $statement = $this->conn->prepare($query);
             if ($statement) {
-				$statement->execute();	
-			} else {
-				$this->log("Statement did not prepare :( - " . $query);
-				throw new Exception('preparation failure on query '. $query);
-			}
-			
-			$result = $statement->fetchAll(PDO::FETCH_ASSOC);
-			$this->log("Got result apparently.");
-			return $result;
+                $statement->execute();
+            } else {
+                $this->log("Statement did not prepare :( - " . $query);
+                throw new Exception('preparation failure on query ' . $query);
+            }
+
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            $this->log("Got result apparently.");
+            return $result;
         } catch (PDOException $e) {
-			$this->log("Exception while executing query '$query' " . $e->getMessage());
+            $this->log("Exception while executing query '$query' " . $e->getMessage());
             $msg = "PDOException on Execution: " . $e->getMessage();
             throw new Exception($msg);
         }
