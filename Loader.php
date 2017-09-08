@@ -108,4 +108,52 @@ class Loader
         }
     }
 
+    private function getPlayerIdByName(string $playerName) : int
+    {
+        $this->log("getPlayerIdByName request for '$playerName'");
+        $query = "SELECT wurmid FROM PLAYERS WHERE name = '$playerName' LIMIT 1";
+        return $this->ex($query)[0]['WURMID'];
+    }
+
+    public function getPlayerData(string $player)
+    {
+        $this->log("getPlayer request for '$player'");
+        $query = "SELECT wurmid,name,playingtime,stamina,hunger,nutrition,thirst,ipaddress,plantedsign,kingdom,money,sleep,calories,carbs,fats,proteins FROM PLAYERS WHERE name = '$player'";
+
+        try {
+            $statement = $this->conn->prepare($query);
+            if ($statement) {
+                $statement->execute();
+            } else {
+                $this->log("Statement did not prepare :( - " . $query);
+                throw new Exception('preparation failure on query ' . $query);
+            }
+
+            $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+            $this->log("Got result apparently.");
+            return $result;
+        } catch (PDOException $e) {
+            $this->log("Exception while executing query '$query' " . $e->getMessage());
+            $msg = "PDOException on Execution: " . $e->getMessage();
+            throw new Exception($msg);
+        }
+
+    }
+
+    public function getPlayerSkills(string $player, SkillNumbers $skillmap)
+    {
+        $skillData = [];
+        $wurmid = $this->getPlayerIdByName($player);
+        $skills = $this->ex("SELECT number,value FROM SKILLS where owner = $wurmid order by number");
+        foreach ($skills as $skill) {
+
+            $skillNumber = $skill['NUMBER'];
+            $skillValue = $skill['VALUE'];
+            $skillName = $skillmap->get($skillNumber);
+
+            $skillData[] = array('number' => $skillNumber, 'value' => $skillValue, 'name' => $skillName);
+        }
+        return $skillData;
+    }
+
 }

@@ -16,44 +16,20 @@ const BLOCK_LOGGING = true;     // whether logging is needed. This is not good r
 $loader = new Loader(SQLITE_DIR, BLOCK_LOGGING);
 $skillnumbers = new SkillNumbers();
 
+$player = isset($_REQUEST['player']) ? strval($_REQUEST['player']) : null;
+if (!$player) {
+   throw new HttpInvalidParamException('Parameter player= is required');
+}
+
 $loader->connect('wurmplayers.db');
 
 $players = $skill = [];
-$players = $loader->ex("SELECT wurmid,name,playingtime,stamina,hunger,nutrition,thirst,ipaddress,plantedsign,kingdom,money,sleep,calories,carbs,fats,proteins FROM PLAYERS");
+$playerData = $loader->getPlayerData($player);
+$playerSkills = $loader->getPlayerSkills($player, $skillnumbers);
 
-// SKILLS
-/* Array
-(
-    [0] => Array
-        (
-            [OWNER] => 16777216
-            [NUMBER] => 101
-            [VALUE] => 30.0439957785196
-        ) 
-*/
+print "<pre>"; print_r($playerData);
+print "</pre><hr><pre>"; print_r($playerSkills);
 
-// PLAYERS
-/*
-    [0] => Array
-        (
-            [WURMID] => 16777216
-            [NAME] => Marlon
-            [PLAYINGTIME] => 1656339797
-            [STAMINA] => -1
-            [HUNGER] => 16212
-            [NUTRITION] => 0.990000009536743
-            [THIRST] => 30545
-            [IPADDRESS] => /196.215.72.193
-            [PLANTEDSIGN] => 1502489368805
-            [KINGDOM] => 4
-            [MONEY] => 352440
-            [SLEEP] => 18000
-            [CALORIES] => 0.0
-            [CARBS] => 0.0
-            [FATS] => 0.0
-            [PROTEINS] => 0.0
-        )
-*/
 
 print "<form method='GET' id='updateform'> <table>";
 print "<tr>
