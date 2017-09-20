@@ -6,7 +6,6 @@ require_once('db\SQLite.php');
 require_once('SkillNumbers.php');
 require_once('Helper.php');
 
-
 class WurmController {
 
     // Configure some should-be's
@@ -21,36 +20,49 @@ class WurmController {
     public function __construct() {
 
         // Instantiate some usefuls
-        $this->sqlite = new db\SQLite\SQLite(static::SQLITE_DIR. static::SQLITE_DB_PLAYERS);
+        $this->sqlite = new db\SQLite\SQLite(static::SQLITE_DIR . static::SQLITE_DB_PLAYERS);
         $this->skillNumberMapper = new SkillNumbers();
         $this->helper = new Helper();
-        
     }
 
+    /**
+     * Updates a wurm skill - responds with 202 or 400
+     * @param string $jsonBody
+     */
     public function updateSingleSkillForPlayer(string $jsonBody) {
         $data = json_decode($jsonBody);
-        
-        $player = (string)$data->player;
-        $skillNumber = (int)$data->skillNumber;
-        $newValue = (float)$data->value;
-        
+
+        $player = (string) $data->player;
+        $skillNumber = (int) $data->skillNumber;
+        $newValue = (float) $data->value;
+
         $skillName = $this->skillNumberMapper->get($skillNumber);
         $playerId = $this->sqlite->getPlayerIdByName($player);
 
         $response = $this->sqlite->setSkill($playerId, $skillNumber, $newValue);
-        print "Response: ";
-        print_r($response);
-
+        if ($response) {
+            http_response_code(202);
+        } else {
+            http_response_code(400);
+        }
     }
-    
+
     public function updatePlayerDataParameter(string $jsonBody) {
         throw new Exception('Not implemented');
     }
-    
+
     public function getAllSkillsForPlayer(string $jsonBody) {
-        throw new Exception('Not implemented');
+        $data = json_decode($jsonBody);
+        $player = (string) $data->player;
+        $playerId = $this->sqlite->getPlayerIdByName($player);
+        
+        $response = $this->sqlite->getSkillsByPlayerId($playerId);
+        $augmented = $this->helper->remapAllSkillsWithNames($response, $this->skillNumberMapper);
+        
+        http_response_code(200);
+        echo json_encode($augmented);
     }
-    
+
     public function getAllDataForPlayer(string $jsonBody) {
         throw new Exception('Not implemented');
     }

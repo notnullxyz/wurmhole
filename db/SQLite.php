@@ -35,7 +35,7 @@ class SQLite {
         $this->db = new Medoo($sqliteMedoo);
     }
         
-    public function getSkillsByPlayerId(int $playerId) : array {
+    public function getSkillsByPlayerId($playerId) : array {
         //"SELECT number,value FROM SKILLS where owner = 123 order by number"
         $select = [
             'ID',
