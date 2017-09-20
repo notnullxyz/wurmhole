@@ -1,33 +1,49 @@
 <?php
 
-// Import some requireds
-require 'vendor/autoload.php';
-require_once('db\SQLite.php');
-require_once('SkillNumbers.php');
-require_once('Helper.php');
+require_once 'WurmController.php';
 
-// Configure some should-be's
-const SQLITE_DIR = "sql/";                      // where the wurm db sqlite files are located
-const SQLITE_DB_PLAYERS = "wurmplayers.db";     // The players database
-const BLOCK_LOGGING = true;                     // whether logging is needed. This is not good really, leave on true
-// Instantiate some usefuls
-$sqlite = new db\SQLite\SQLite(SQLITE_DIR . SQLITE_DB_PLAYERS);
-$skillNumberMap = new SkillNumbers();
-$helper = new Helper();
-$klein = new \Klein\Klein();
-
-// check for ?player=
-$player = isset($_REQUEST['player']) ? strval($_REQUEST['player']) : null;
+// check for action=
+$player = isset($_REQUEST['action']) ? strval($_REQUEST['action']) : null;
 if (!$player) {
-    throw new ErrorException('Query Parameter player= is required');
+    throw new ErrorException('Query Parameter action= is required');
 }
 
-// determine player id.
-$playerName = & $player;
-$playerId = $sqlite->getPlayerIdByName($playerName);
+/**
+ * ..... Now for some quick home-routing without a framework .....
+ */
 
-//$klein->respond('GET', '/test', function () {
-//    return 'Hello World!';
-//});
-//
-//$klein->dispatch();
+$requestUri = $_SERVER['REQUEST_URI'];
+$requestMethod = $_SERVER['REQUEST_METHOD'];
+
+// only care about params
+if (($pos = strpos($requestUri, "?")) !== FALSE) {
+    $queryParams = substr($requestUri, $pos + 1);
+}
+
+parse_str($queryParams, $params);
+
+$action = $params['action'];
+$body = file_get_contents('php://input');
+$wurmCon = new WurmController();
+
+switch ($requestMethod) {
+    case 'GET':
+        if ($action == 'allSkills') {
+            $wurmCon->getAllSkillsForPlayer($body);
+        } elseif ($action == 'allData') {
+            $wurmCon->getAllDataForPlayer($body);
+        }
+        break;
+
+    case 'PUT':
+        if ($action == 'putSkill') {
+            $wurmCon->updateSingleSkillForPlayer($body);
+        } elseif ($action == 'putPlayerData') {    
+            $wurmCon->updatePlayerDataParameter($body);
+        }      
+        break;
+
+    default:
+        throw new Exception("Improper usage.");
+}
+
