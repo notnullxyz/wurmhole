@@ -14,6 +14,7 @@ const BLOCK_LOGGING = true;                     // whether logging is needed. Th
 $sqlite = new db\SQLite\SQLite(SQLITE_DIR . SQLITE_DB_PLAYERS);
 $skillNumberMap = new SkillNumbers();
 $helper = new Helper();
+$klein = new \Klein\Klein();
 
 // check for ?player=
 $player = isset($_REQUEST['player']) ? strval($_REQUEST['player']) : null;
@@ -25,10 +26,8 @@ if (!$player) {
 $playerName = & $player;
 $playerId = $sqlite->getPlayerIdByName($playerName);
 
-$request = $_SERVER['REQUEST_URI'];
-
-if (($pos = strpos($request, '?')) !== false) {
-    $request = substr($request, 0, $pos);
-}
-
-print "Request: <pre>"; print_r($request);
+//$klein->respond('GET', '/test', function () {
+//    return 'Hello World!';
+//});
+//
+//$klein->dispatch();
