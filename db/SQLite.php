@@ -55,7 +55,7 @@ class SQLite {
      * @param string $playerName
      * @return int
      */
-    public function getPlayerIdByName(string $playerName) : int {
+    public function getPlayerIdByName(string $playerName) : string {
         // SELECT name from PLAYERS where WURMID = 16777216
         
         $select = [
@@ -70,7 +70,7 @@ class SQLite {
         $value = array_pop($data)['WURMID'] ?? 0;
         return $value;
     }
-        
+
     public function getPlayerDataByName(string $playerName) : array {
         //"SELECT wurmid,name,playingtime,stamina,hunger,nutrition,thirst,ipaddress,plantedsign,kingdom,money,sleep,calories,carbs,fats,proteins FROM PLAYERS WHERE NAME = marlon"    
         $select = [
@@ -92,7 +92,7 @@ class SQLite {
             'DEITY',
             'ALIGNMENT',
             'GOD',
-            'FAVOUR',
+            'FAVOR',
             'KINGDOM',
             'MONEY',
             'FAT',
@@ -103,7 +103,7 @@ class SQLite {
             'EMAIL',
             'SLEEP',
             'DISEASE',
-            'HOTAWINS',
+            'HOTA_WINS',
             'KARMA',
             'CALORIES',
             'FATS',
