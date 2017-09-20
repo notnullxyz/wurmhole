@@ -28,14 +28,19 @@ class WurmController {
     }
 
     public function updateSingleSkillForPlayer(string $jsonBody) {
-        $skillNumber = 2;
-        $newValue = 26.61;
-        $skillName = $skillNumberMap->get($skillNumber);
+        $data = json_decode($jsonBody);
+        
+        $player = (string)$data->player;
+        $skillNumber = (int)$data->skillNumber;
+        $newValue = (float)$data->value;
+        
+        $skillName = $this->skillNumberMapper->get($skillNumber);
+        $playerId = $this->sqlite->getPlayerIdByName($player);
 
-        print "Going to set skill id $skillNumber ($skillName) to $newValue for player id: $playerId ($playerName)";
-        print "<hr>";
-        $response = $sqlite->setSkill($playerId, $skillNumber, $newValue);
-        print "Rows updated: $response";
+        $response = $this->sqlite->setSkill($playerId, $skillNumber, $newValue);
+        print "Response: ";
+        print_r($response);
+
     }
     
     public function updatePlayerDataParameter(string $jsonBody) {
@@ -49,5 +54,5 @@ class WurmController {
     public function getAllDataForPlayer(string $jsonBody) {
         throw new Exception('Not implemented');
     }
-    
+
 }
