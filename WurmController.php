@@ -45,6 +45,7 @@ class WurmController {
         $playerId = $this->sqlite->getPlayerIdByName($player);
 
         $response = $this->sqlite->setSkill($playerId, $skillNumber, $newValue);
+
         if ($response) {
             http_response_code(static::HTTP_ACCEPTED);
         } else {
@@ -52,27 +53,87 @@ class WurmController {
         }
     }
 
+    /**
+     * This updates some parameters from the PLAYERS table.
+     * Most values could end in disaster, so only going to allow updating of some.
+     * safe'ish: EMAIL,SLEEP,KARMA,CALORIES,CARBS,PROTEINS,FATS,PLANTEDSIGN
+     * The rest will be ignored.
+     * 
+     * @param string $jsonBody
+     */
     public function updatePlayerDataParameter(string $jsonBody) {
-        throw new Exception('Not implemented');
+        $data = json_decode($jsonBody);
+
+        $player = (string) $data->player;
+        $playerId = $this->sqlite->getPlayerIdByName($player);
+
+        if (!$playerId) {
+            http_response_code(static::HTTP_NOTFOUND);
+            die();
+        }
+
+        $safes = ['email', 'sleep', 'karma', 'calories', 'carbs', 'proteins',
+            'fats', 'plantedsign'];
+
+        $dataAry = (array) $data;
+        unset($dataAry['player']);
+        $totalUpdate = $totalSkip = $totalFail = 0;
+
+        foreach ($dataAry as $attr => $newValue) {
+            $key = strtolower($attr);
+            if (in_array($key, $safes)) {
+                $rows = $this->sqlite->setPlayerDataAttr($playerId, $player, $key, $newValue);
+                if ($rows == 1) {
+                    $totalUpdate += $rows;
+                } else {
+                    $totalFail++;
+                }
+            } else {
+                $totalSkip++;
+            }
+        }
+
+        $result = [
+            'updated' => $totalUpdate,
+            'failed' => $totalFail,
+            'skipped' => $totalSkip
+        ];
+        
+        http_response_code(static::HTTP_OK);
+        echo json_encode($result);
     }
 
     public function getAllSkillsForPlayer(string $jsonBody) {
         $data = json_decode($jsonBody);
         $player = (string) $data->player;
         $playerId = $this->sqlite->getPlayerIdByName($player);
+
         if (!$playerId) {
             http_response_code(static::HTTP_NOTFOUND);
+            die();
         }
-        
+
         $response = $this->sqlite->getSkillsByPlayerId($playerId);
         $augmented = $this->helper->remapAllSkillsWithNames($response, $this->skillNumberMapper);
-        
+
         http_response_code(static::HTTP_OK);
         echo json_encode($augmented);
     }
 
     public function getAllDataForPlayer(string $jsonBody) {
-        throw new Exception('Not implemented');
+        $data = json_decode($jsonBody);
+        $player = (string) $data->player;
+
+        $playerId = $this->sqlite->getPlayerIdByName($player);
+
+        if (!$playerId) {
+            http_response_code(static::HTTP_NOTFOUND);
+            die();
+        }
+
+        $response = $this->sqlite->getPlayerDataByName($player);
+        http_response_code(static::HTTP_OK);
+        echo json_encode(array_pop($response));
     }
 
 }
