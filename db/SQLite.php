@@ -35,7 +35,7 @@ class SQLite {
         $this->db = new Medoo($sqliteMedoo);
     }
         
-    public function getSkillsByPlayerId($playerId) : array {
+    public function getSkillsByPlayerId(string $playerId) : array {
         //"SELECT number,value FROM SKILLS where owner = 123 order by number"
         $select = [
             'ID',
@@ -125,7 +125,7 @@ class SQLite {
      * @param float $newValue - the new value to set the skill to
      * @return int rows-affected
      */
-    public function setSkill(int $playerId, int $skillIdNumber, float $newValue) : int {
+    public function setSkill(string $playerId, int $skillIdNumber, float $newValue) : int {
         $replace = [
             "VALUE" => $newValue
         ];
