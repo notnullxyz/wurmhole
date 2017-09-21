@@ -1,0 +1,178 @@
+{
+	"_type": "export",
+	"__export_format": 3,
+	"__export_date": "2017-09-21T20:14:55.649Z",
+	"__export_source": "insomnia.desktop.app:v5.8.4",
+	"resources": [
+		{
+			"_id": "wrk_a3b25ea9b7de441abfbf4e508894f452",
+			"parentId": null,
+			"modified": 1505927098267,
+			"created": 1505927098267,
+			"name": "wurmhole",
+			"description": "",
+			"certificates": [],
+			"_type": "workspace"
+		},
+		{
+			"_id": "env_2d4ecbf282f4462fa6bf68907a0f14fb",
+			"parentId": "wrk_a3b25ea9b7de441abfbf4e508894f452",
+			"modified": 1505927127486,
+			"created": 1505927127486,
+			"name": "Base Environment",
+			"data": {},
+			"color": null,
+			"isPrivate": false,
+			"_type": "environment"
+		},
+		{
+			"_id": "jar_31ad2fcdcff14695bbff8384b4a3ce55",
+			"parentId": "wrk_a3b25ea9b7de441abfbf4e508894f452",
+			"modified": 1505927322448,
+			"created": 1505927322448,
+			"name": "Default Jar",
+			"cookies": [],
+			"_type": "cookie_jar"
+		},
+		{
+			"_id": "req_0ee75a5cea4b4d5daff7f982d27c1933",
+			"parentId": "wrk_a3b25ea9b7de441abfbf4e508894f452",
+			"modified": 1506020485600,
+			"created": 1505927127420,
+			"url": "http://localhost/wurmhole/?",
+			"name": "putSkill",
+			"description": "",
+			"method": "PUT",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"player\": \"Zidon\",\n\t\"skillNumber\": 2,\n\t\"value\": 233.1\n}"
+			},
+			"parameters": [
+				{
+					"name": "action",
+					"value": "putSkill",
+					"id": "pair_b81aec707a3d4c04a40cb25b0447130c"
+				}
+			],
+			"headers": [
+				{
+					"name": "Content-Type",
+					"value": "application/json",
+					"id": "pair_78e97b554f2a4fa5a9cffe0ad5e8efb9"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1505927127420,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_93a65a5743fd479fa4200b04d568553c",
+			"parentId": "wrk_a3b25ea9b7de441abfbf4e508894f452",
+			"modified": 1505929540510,
+			"created": 1505928380120,
+			"url": "http://localhost/wurmhole/?",
+			"name": "allSkills",
+			"description": "",
+			"method": "GET",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"player\": \"Zidon\"\n}"
+			},
+			"parameters": [
+				{
+					"name": "action",
+					"value": "allSkills",
+					"id": "pair_b81aec707a3d4c04a40cb25b0447130c"
+				}
+			],
+			"headers": [
+				{
+					"name": "Content-Type",
+					"value": "application/json",
+					"id": "pair_78e97b554f2a4fa5a9cffe0ad5e8efb9"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1500906939222.5,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_0409d438698a4c2d86635e5790b66eb2",
+			"parentId": "wrk_a3b25ea9b7de441abfbf4e508894f452",
+			"modified": 1506021168925,
+			"created": 1505928460918,
+			"url": "http://localhost/wurmhole/?",
+			"name": "allData",
+			"description": "",
+			"method": "GET",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"player\": \"Marlon\"\n}"
+			},
+			"parameters": [
+				{
+					"name": "action",
+					"value": "allData",
+					"id": "pair_b81aec707a3d4c04a40cb25b0447130c"
+				}
+			],
+			"headers": [
+				{
+					"name": "Content-Type",
+					"value": "application/json",
+					"id": "pair_78e97b554f2a4fa5a9cffe0ad5e8efb9"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1498396845123.75,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_a3b9d638b45748629ba205c94a071164",
+			"parentId": "wrk_a3b25ea9b7de441abfbf4e508894f452",
+			"modified": 1506024535057,
+			"created": 1505928522848,
+			"url": "http://localhost/wurmhole/?",
+			"name": "putPlayerData",
+			"description": "",
+			"method": "PUT",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"player\": \"Marlon\",\n\t\n\t\"email\": \"maralon@foo.com\",\n\t\"sleep\": \"12345\",\n\t\"SEX\": 4,\n\t\"FATS\": 9999,\n\t\"carbs\": 2211\n}"
+			},
+			"parameters": [
+				{
+					"name": "action",
+					"value": "putPlayerData",
+					"id": "pair_b81aec707a3d4c04a40cb25b0447130c"
+				}
+			],
+			"headers": [
+				{
+					"name": "Content-Type",
+					"value": "application/json",
+					"id": "pair_78e97b554f2a4fa5a9cffe0ad5e8efb9"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1503417033321.25,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		}
+	]
+}

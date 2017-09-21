@@ -1,98 +1,49 @@
 <?php
-/**
- * WurmHole - Data Manipulator For Marlon & Angora
- * Marlon van der Linde marlon250f@gmail.com
- */
 
-require_once('Loader.php');
-require_once('SkillNumbers.php');
+require_once 'WurmController.php';
 
-const SQLITE_DIR = "sql/";
-const BLOCK_LOGGING = true;
-
-$loader = new Loader(SQLITE_DIR, BLOCK_LOGGING);
-$skillnumbers = new SkillNumbers();
-
-$loader->connect('wurmplayers.db');
-
-$players = $skill = [];
-
-$players = $loader->ex("SELECT wurmid,name,playingtime,stamina,hunger,nutrition,thirst,ipaddress,plantedsign,kingdom,money,sleep,calories,carbs,fats,proteins FROM PLAYERS");
-
-// SKILLS
-/* Array
-(
-    [0] => Array
-        (
-            [OWNER] => 16777216
-            [NUMBER] => 101
-            [VALUE] => 30.0439957785196
-        ) 
-*/
-
-// PLAYERS
-/*
-    [0] => Array
-        (
-            [WURMID] => 16777216
-            [NAME] => Marlon
-            [PLAYINGTIME] => 1656339797
-            [STAMINA] => -1
-            [HUNGER] => 16212
-            [NUTRITION] => 0.990000009536743
-            [THIRST] => 30545
-            [IPADDRESS] => /196.215.72.193
-            [PLANTEDSIGN] => 1502489368805
-            [KINGDOM] => 4
-            [MONEY] => 352440
-            [SLEEP] => 18000
-            [CALORIES] => 0.0
-            [CARBS] => 0.0
-            [FATS] => 0.0
-            [PROTEINS] => 0.0
-        )
-*/
-
-print "<form method='GET' id='updateform'> <table>";
-	print "<tr>
-	<th>Player</th>
-	<th>Calories</th>
-	<th>Carbs</th>
-	<th>Fats</th>
-	<th>Proteins</th>
-	<th>PlantedSign</th>
-	<th>Skills</th>
-	</tr>";
-
-foreach ($players as $player) {
-	$playerid = $player['WURMID'];
-	$playername = $player['NAME'];
-	$calories = $player['CALORIES'];
-	$carbs = $player['CARBS'];
-	$fats = $player['FATS'];
-	$proteins = $player['PROTEINS'];
-    $plantedsign = $player['PLANTEDSIGN'];
-    
-    $skills =  $loader->ex("SELECT number,value FROM SKILLS where owner = $playerid order by number");
-
-	print "<tr><td>$playername</td>";
-	print "<td><input type='text' name='calories' value='$calories'></td>"
-		."<td><input type='text' name='carbs' value='$carbs'></td>"
-		."<td><input type='text' name='fats' value='$fats'></td>"
-		."<td><input type='text' name='proteins' value='$proteins'></td>"
-		."<td><input type='text' name='plantedsign' value='$plantedsign'></td>";
-        
-    foreach ($skills as $skill) {
-        $number = $skill['NUMBER'];
-        $value = $skill['VALUE'];
-        $skillname = $skillnumbers->get($number);
-
-        print "<td>$skillname</td>";
-        print "<td><input type='text' name='$number' value='$value'></td>";
-    }
-
-    //print "<td><button type='button' form='updateform'>patch</button></td>";
-	print "</tr>";
+// check for action=
+$player = isset($_REQUEST['action']) ? strval($_REQUEST['action']) : null;
+if (!$player) {
+    throw new ErrorException('Query Parameter action= is required');
 }
 
-print "</table></form>";
+/**
+ * ..... Now for some quick home-routing without a framework .....
+ */
+
+$requestUri = $_SERVER['REQUEST_URI'];
+$requestMethod = $_SERVER['REQUEST_METHOD'];
+
+// only care about params
+if (($pos = strpos($requestUri, "?")) !== FALSE) {
+    $queryParams = substr($requestUri, $pos + 1);
+}
+
+parse_str($queryParams, $params);
+
+$action = $params['action'];
+$body = file_get_contents('php://input');
+$wurmCon = new WurmController();
+
+switch ($requestMethod) {
+    case 'GET':
+        if ($action == 'allSkills') {
+            $wurmCon->getAllSkillsForPlayer($body);
+        } elseif ($action == 'allData') {
+            $wurmCon->getAllDataForPlayer($body);
+        }
+        break;
+
+    case 'PUT':
+        if ($action == 'putSkill') {
+            $wurmCon->updateSingleSkillForPlayer($body);
+        } elseif ($action == 'putPlayerData') {    
+            $wurmCon->updatePlayerDataParameter($body);
+        }      
+        break;
+
+    default:
+        throw new Exception("Improper usage.");
+}
+
