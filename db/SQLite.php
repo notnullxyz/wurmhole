@@ -35,7 +35,7 @@ class SQLite {
         $this->db = new Medoo($sqliteMedoo);
     }
         
-    public function getSkillsByPlayerId($playerId) : array {
+    public function getSkillsByPlayerId(string $playerId) : array {
         //"SELECT number,value FROM SKILLS where owner = 123 order by number"
         $select = [
             'ID',
@@ -125,7 +125,7 @@ class SQLite {
      * @param float $newValue - the new value to set the skill to
      * @return int rows-affected
      */
-    public function setSkill(int $playerId, int $skillIdNumber, float $newValue) : int {
+    public function setSkill(string $playerId, int $skillIdNumber, float $newValue) : int {
         $replace = [
             "VALUE" => $newValue
         ];
@@ -136,14 +136,32 @@ class SQLite {
         ];
         
         $data = $this->db->update(static::DB_SKILLS, $replace, $where);
-//        $data = $this->db->query(
-//                'UPDATE "SKILLS" SET "VALUE" = :newvalue WHERE "OWNER" = :owner AND "NUMBER" = :number',
-//                [
-//                    ":newvalue" => $newValue,
-//                    ":owner" => $playerId,
-//                    ":number" => $skillIdNumber
-//                ]);
+        return $data->rowCount();
+    }
+
+    /**
+     * Set a player data attribute. This must be used with care.
+     * Provide the wurmid AND name as a confirmed safety fuse.
+     * 
+     * @param string $playerId
+     * @param string $playerName
+     * @param int $attribute
+     * @param float $newValue
+     * @return int
+     */
+    public function setPlayerDataAttr(string $playerId, string $playerName, string $attribute, $newValue) : int {
+        $fieldName = strtoupper($attribute);
         
+        $replace = [
+            $fieldName => $newValue
+        ];
+        
+        $where = [
+            "WURMID[=]" => $playerId,
+            "NAME[=]" => $playerName
+        ];
+        
+        $data = $this->db->update(static::DB_PLAYERS, $replace, $where);
         return $data->rowCount();
     }
 
