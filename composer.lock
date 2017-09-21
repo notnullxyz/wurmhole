@@ -4,11 +4,11 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "0646352bd677f0af9c54be046f7448b2",
+    "content-hash": "d0e31a31ee860f3d04a82d848d1a410c",
     "packages": [
         {
             "name": "catfan/medoo",
-            "version": "v1.4.5",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/catfan/Medoo.git",
@@ -63,13 +63,15 @@
                 "sql",
                 "sqlite"
             ],
-            "time": "2017-06-24T14:43:07+00:00"
+            "time": "2017-06-24 14:43:07"
         }
     ],
     "packages-dev": [],
     "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": [],
+    "minimum-stability": "dev",
+    "stability-flags": {
+        "catfan/medoo": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": [],

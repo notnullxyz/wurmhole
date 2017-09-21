@@ -1,5 +1,16 @@
 {
+    "name": "notnullxyz/wurmhole",
+    "description": "A cheap and simple wurm skill and player manipulating API",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Marlon van der Linde",
+            "email": "marlon@notnull.xyz"
+        }
+    ],
+    "minimum-stability": "dev",
     "require": {
-        "catfan/Medoo": "1.4.5"
+        "catfan/Medoo": "dev-master"
     }
 }
