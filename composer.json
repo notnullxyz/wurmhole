@@ -11,6 +11,7 @@
     ],
     "minimum-stability": "dev",
     "require": {
-        "catfan/Medoo": "dev-master"
+        "catfan/Medoo": "dev-master",
+        "silex/silex": "~2.0"
     }
 }
