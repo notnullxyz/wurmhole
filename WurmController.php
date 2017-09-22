@@ -1,16 +1,16 @@
 <?php
 
 // Import some requireds
-require 'vendor/autoload.php';
-require_once('db\SQLite.php');
+//require 'vendor/autoload.php';
+
+//require_once('db\SQLite.php');
 require_once('SkillNumbers.php');
 require_once('Helper.php');
+require_once('./db/SQLite.php');
 
 class WurmController {
 
     // Configure some should-be's
-    const SQLITE_DIR = "sql/";                      // where the wurm db sqlite files are located
-    const SQLITE_DB_PLAYERS = "wurmplayers.db";     // The players database
     const BLOCK_LOGGING = true;                     // whether logging is needed. This is not good really, leave on true
     const HTTP_OK = 200;
     const HTTP_ACCEPTED = 202;
@@ -21,11 +21,18 @@ class WurmController {
     private $sqlite;
     private $skillNumberMapper;
     private $helper;
+    private $dbFileLocation;
 
-    public function __construct() {
+    public function __construct(string $dbLocation) {
 
-        // Instantiate some usefuls
-        $this->sqlite = new db\SQLite\SQLite(static::SQLITE_DIR . static::SQLITE_DB_PLAYERS);
+        $this->dbFileLocation = $dbLocation;
+        
+        try {
+            $this->sqlite = new SQLite($dbLocation);
+        } catch (ErrorException $ee) {
+            die('WurmController Suffers: ' . $ee->getMessage());
+        }
+        
         $this->skillNumberMapper = new SkillNumbers();
         $this->helper = new Helper();
     }
