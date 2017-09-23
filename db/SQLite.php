@@ -1,6 +1,6 @@
 <?php
 
-namespace db\SQLite;
+require 'vendor/autoload.php';
 
 use Medoo\Medoo;
 
@@ -29,7 +29,7 @@ class SQLite {
                 'logging' => true
             ];
         } else {
-            throw new Exception('That Database is not valid: ' . $database);
+            throw new Exception('That Database cannot be opened: ' . $database);
         }
 
         $this->db = new Medoo($sqliteMedoo);
