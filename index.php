@@ -6,13 +6,14 @@
  * Licensed Under the MIT License https://opensource.org/licenses/MIT
  */
 
-use Symfony\Component\HttpFoundation\Request;
-
 require_once __DIR__.'/vendor/autoload.php';
 require_once 'WurmController.php';
 
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
 const DEBUG = TRUE;
-const DBFILE = 'sql/wurmlogin.db';
+const DBFILE = 'sql/wurmplayers.db';
 
 $app = new Silex\Application();
 $app['debug'] = DEBUG;
@@ -25,8 +26,8 @@ $app->before(function (Request $request) {
     }
 });
 
-if (!file_exists(DBFILE)) {
-    die('Cannot open the DBFILE: ' . DBFILE);
+if (!is_writeable(DBFILE)) {
+    die("Cannot write or otherwise use the database file: " . DBFILE);
 }
 
 $wurmCon = new WurmController(DBFILE);
@@ -36,9 +37,10 @@ $wurmCon = new WurmController(DBFILE);
 $app->get('/data', function (Request $request) use ($app) {
     //return 'GET DATA ';
     $player = $request->request->get('player');
+    print "-> $player";
     
     
-    return $app->json($player, 201);
+    return $app->json($player, Response::HTTP_OK);
     
 });
 

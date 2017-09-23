@@ -9,9 +9,9 @@
             "email": "marlon@notnull.xyz"
         }
     ],
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
-        "catfan/Medoo": "dev-master",
-        "silex/silex": "~2.0"
+        "silex/silex": "~2.0",
+        "catfan/medoo": "~1.4.5"
     }
 }
