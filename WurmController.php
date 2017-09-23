@@ -9,15 +9,6 @@ require_once('Helper.php');
 require_once('./db/SQLite.php');
 
 class WurmController {
-
-    // Configure some should-be's
-    const BLOCK_LOGGING = true;                     // whether logging is needed. This is not good really, leave on true
-    const HTTP_OK = 200;
-    const HTTP_ACCEPTED = 202;
-    const HTTP_NOTFOUND = 404;
-    const HTTP_BADREQUEST = 400;
-    const HTTP_SERVERERR = 500;
-
     private $sqlite;
     private $skillNumberMapper;
     private $helper;
@@ -41,62 +32,54 @@ class WurmController {
      * Updates a wurm skill - responds with 202 or 400
      * @param string $jsonBody
      */
-    public function updateSingleSkillForPlayer(string $jsonBody) {
-        $data = json_decode($jsonBody);
+    public function updateSingleSkillForPlayer(string $playerName, int $skillNumber, $newValue) {
+        $playerId = $this->sqlite->getPlayerIdByName($playerName);
 
-        $player = (string) $data->player;
-        $skillNumber = (int) $data->skillNumber;
-        $newValue = (float) $data->value;
-
-        $skillName = $this->skillNumberMapper->get($skillNumber);
-        $playerId = $this->sqlite->getPlayerIdByName($player);
-
-        $response = $this->sqlite->setSkill($playerId, $skillNumber, $newValue);
-
-        if ($response) {
-            http_response_code(static::HTTP_ACCEPTED);
-        } else {
-            http_response_code(static::HTTP_BADREQUEST);
+        if (!$playerId) {
+            return null;
         }
+        
+        $result = $this->sqlite->setSkill($playerId, $skillNumber, $newValue);
+        return $result;
     }
 
     /**
-     * This updates some parameters from the PLAYERS table.
+     * This updates some parameters on the PLAYERS table.
      * Most values could end in disaster, so only going to allow updating of some.
-     * safe'ish: EMAIL,SLEEP,KARMA,CALORIES,CARBS,PROTEINS,FATS,PLANTEDSIGN
-     * The rest will be ignored.
+     * safe hardcodes: EMAIL,SLEEP,KARMA,CALORIES,CARBS,PROTEINS,FATS,PLANTEDSIGN
      * 
-     * @param string $jsonBody
+     * The rest will be ignored. An array is returned detailing the updates, skips and fails.
+     * 
+     * @param string $data
+     * @param array $data
      */
-    public function updatePlayerDataParameter(string $jsonBody) {
-        $data = json_decode($jsonBody);
-
-        $player = (string) $data->player;
-        $playerId = $this->sqlite->getPlayerIdByName($player);
+    public function updatePlayerDataParameter(string $playerName, array $data) {
+        $playerId = $this->sqlite->getPlayerIdByName($playerName);
 
         if (!$playerId) {
-            http_response_code(static::HTTP_NOTFOUND);
-            die();
+            return null;
         }
 
         $safes = ['email', 'sleep', 'karma', 'calories', 'carbs', 'proteins',
-            'fats', 'plantedsign'];
+            'fat', 'plantedsign'];
 
         $dataAry = (array) $data;
         unset($dataAry['player']);
-        $totalUpdate = $totalSkip = $totalFail = 0;
+        $totalUpdate = $totalSkip = $totalFail = [];
 
         foreach ($dataAry as $attr => $newValue) {
             $key = strtolower($attr);
             if (in_array($key, $safes)) {
-                $rows = $this->sqlite->setPlayerDataAttr($playerId, $player, $key, $newValue);
-                if ($rows == 1) {
-                    $totalUpdate += $rows;
+                $rows = $this->sqlite->setPlayerDataAttr($playerId, $playerName, $key, $newValue);
+                
+                if ($rows === 1) {
+                    $totalUpdate[] = $attr;
                 } else {
-                    $totalFail++;
+                    $totalFail[] = $attr;
                 }
+
             } else {
-                $totalSkip++;
+                $totalSkip[] = $attr;
             }
         }
 
@@ -106,41 +89,37 @@ class WurmController {
             'skipped' => $totalSkip
         ];
         
-        http_response_code(static::HTTP_OK);
-        echo json_encode($result);
+        return $result;
     }
 
-    public function getAllSkillsForPlayer(string $jsonBody) {
-        $data = json_decode($jsonBody);
-        $player = (string) $data->player;
-        $playerId = $this->sqlite->getPlayerIdByName($player);
+    /**
+     * Get all the available skills for the given player name.
+     * @param string $playerName
+     */
+    public function getAllSkillsForPlayer(string $playerName) {
+        $playerId = $this->sqlite->getPlayerIdByName($playerName);
 
         if (!$playerId) {
-            http_response_code(static::HTTP_NOTFOUND);
-            die();
+            null;
         }
 
         $response = $this->sqlite->getSkillsByPlayerId($playerId);
-        $augmented = $this->helper->remapAllSkillsWithNames($response, $this->skillNumberMapper);
-
-        http_response_code(static::HTTP_OK);
-        echo json_encode($augmented);
+        return $this->helper->remapAllSkillsWithNames($response, $this->skillNumberMapper);
     }
 
-    public function getAllDataForPlayer(string $jsonBody) {
-        $data = json_decode($jsonBody);
-        $player = (string) $data->player;
-
-        $playerId = $this->sqlite->getPlayerIdByName($player);
+    /**
+     * Get all the available player attributes for the player name.
+     * @param string $playerName
+     */
+    public function getAllDataForPlayer(string $playerName) {
+        $playerId = $this->sqlite->getPlayerIdByName($playerName);
 
         if (!$playerId) {
-            http_response_code(static::HTTP_NOTFOUND);
-            die();
+            return null;
         }
 
-        $response = $this->sqlite->getPlayerDataByName($player);
-        http_response_code(static::HTTP_OK);
-        echo json_encode(array_pop($response));
+        $response = $this->sqlite->getPlayerDataByName($playerName);
+        return array_pop($response);
     }
 
 }

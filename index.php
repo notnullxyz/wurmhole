@@ -34,26 +34,50 @@ $wurmCon = new WurmController(DBFILE);
 
 // ROUTES
 
-$app->get('/data', function (Request $request) use ($app) {
+$app->get('/data', function (Request $request) use ($app, $wurmCon) {
     //return 'GET DATA ';
+    $player = $request->request->get('player') ?? '';
+    $response = $wurmCon->getAllDataForPlayer($player);
+    if (!$response) {
+        return $app->json([], Response::HTTP_NOT_FOUND);
+    } else {
+        return $app->json($response, Response::HTTP_OK);
+    }
+});
+
+$app->get('/skills', function (Request $request) use ($app, $wurmCon) {
+    $player = $request->request->get('player') ?? '';
+    $response = $wurmCon->getAllSkillsForPlayer($player);
+    if (!$response) {
+        return $app->json([], Response::HTTP_NOT_FOUND);
+    } else {
+        return $app->json($response, Response::HTTP_OK);
+    }
+});
+
+$app->put('/skill', function (Request $request) use ($app, $wurmCon) {
     $player = $request->request->get('player');
-    print "-> $player";
+    $skillNumber = $request->request->get('skillNumber');
+    $value = $request->request->get('value');
     
+    $response = $wurmCon->updateSingleSkillForPlayer($player, $skillNumber, $value);
     
-    return $app->json($player, Response::HTTP_OK);
-    
+    if (!$response) {
+        return $app->json([], Response::HTTP_NOT_FOUND);
+    } else {
+        return $app->json([], Response::HTTP_OK);
+    }    
 });
 
-$app->get('/skills', function (Request $request) use ($app) {
-    return 'GET SKILLS ';
-});
-
-$app->put('/skill', function (Request $request) use ($app) {
-    return 'PUT SKILLS ';
-});
-
-$app->put('/data', function (Request $request) use ($app) {
-    return 'PUT DATA';
+$app->put('/data', function (Request $request) use ($app, $wurmCon) {
+    $player = $request->request->get('player') ?? '';
+    $data = $request->request->get('update') ?? '{}';
+    $response = $wurmCon->updatePlayerDataParameter($player, $data);
+    if ($response) {
+        return $app->json($response, Response::HTTP_ACCEPTED);
+    } else {
+        return $app->json('{}', Response::HTTP_BAD_REQUEST);
+    }
 });
 
 
