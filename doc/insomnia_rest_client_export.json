@@ -1,7 +1,7 @@
 {
 	"_type": "export",
 	"__export_format": 3,
-	"__export_date": "2017-09-23T16:19:01.348Z",
+	"__export_date": "2017-09-25T11:56:19.389Z",
 	"__export_source": "insomnia.desktop.app:v5.8.4",
 	"resources": [
 		{
@@ -144,6 +144,35 @@
 			],
 			"authentication": {},
 			"metaSortKey": -1503417033321.25,
+			"settingStoreCookies": true,
+			"settingSendCookies": true,
+			"settingDisableRenderRequestBody": false,
+			"settingEncodeUrl": true,
+			"_type": "request"
+		},
+		{
+			"_id": "req_53d38003ee5e4869b286674c7b5dffa2",
+			"parentId": "wrk_a3b25ea9b7de441abfbf4e508894f452",
+			"modified": 1506340565949,
+			"created": 1506332619842,
+			"url": "http://localhost/wurmhole/skillname",
+			"name": "skill name cross ref",
+			"description": "",
+			"method": "GET",
+			"body": {
+				"mimeType": "application/json",
+				"text": "{\n\t\"skill-dump-name\": \"Shortsword\"\n}"
+			},
+			"parameters": [],
+			"headers": [
+				{
+					"name": "Content-Type",
+					"value": "application/json",
+					"id": "pair_c04fc1e1b82648cfa728eed99284cbb3"
+				}
+			],
+			"authentication": {},
+			"metaSortKey": -1506332619842,
 			"settingStoreCookies": true,
 			"settingSendCookies": true,
 			"settingDisableRenderRequestBody": false,

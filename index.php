@@ -55,6 +55,17 @@ $app->get('/skills', function (Request $request) use ($app, $wurmCon) {
     }
 });
 
+$app->get('/skillname', function (Request $request) use ($app, $wurmCon) {
+    $prettyName = $request->request->get('skill-dump-name') ?? '';
+    $response = $wurmCon->getSkillInternalNameBySkillDumpName($prettyName);
+    if (!$response) {
+        return $app->json([], Response::HTTP_NOT_FOUND);
+    } else {
+        return $app->json($response, Response::HTTP_OK);
+    }
+       
+});
+
 $app->put('/skill', function (Request $request) use ($app, $wurmCon) {
     $player = $request->request->get('player');
     $skillNumber = $request->request->get('skillNumber');

@@ -13,23 +13,26 @@
  */
 class Helper {
     
-    public function __construct() {
+    private $skillNumberMapper;
+    
+    public function __construct(SkillNumbers $sn) {
+        $this->skillNumberMapper = $sn;
     }
     
     /**
      * A quick augmentation to add NAME to the skills data array. This can be
-     * optomised. TODO
+     * optimised. TODO
      * @param array $skillData
      * @param SkillNumbers $skillNumbers
      * @return array
      */
-    public function remapAllSkillsWithNames(array $skillData, SkillNumbers $skillNumbers) : array {
+    public function remapAllSkillsWithNames(array $skillData) : array {
         $augmented = [];
         foreach ($skillData as $value) {
             $skillId = $value['ID'];
             $skillNum = $value['NUMBER'];
             $skillVal = $value['VALUE'];
-            $skillName = $skillNumbers->get($skillNum);
+            $skillName = $this->skillNumberMapper->get($skillNum);
             
             $augmented[] = [
                 'ID' => $skillId,
@@ -39,6 +42,13 @@ class Helper {
             ];
         }
         return $augmented;
+    }
+    
+    /**
+     * Retrieve and return the internal skill name, given a pretty skill name from the player skills dump files.
+     */
+    public function getInternalSkillNameByPrettyName(string $prettySkillName) {
+        return $this->skillNumberMapper->getInternalNameByPrettyName($prettySkillName);
     }
     
     
