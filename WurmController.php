@@ -10,7 +10,6 @@ require_once('./db/SQLite.php');
 
 class WurmController {
     private $sqlite;
-    private $skillNumberMapper;
     private $helper;
     private $dbFileLocation;
 
@@ -23,9 +22,8 @@ class WurmController {
         } catch (ErrorException $ee) {
             die('WurmController Suffers: ' . $ee->getMessage());
         }
-        
-        $this->skillNumberMapper = new SkillNumbers();
-        $this->helper = new Helper();
+
+        $this->helper = new Helper(new SkillNumbers());
     }
 
     /**
@@ -83,12 +81,7 @@ class WurmController {
             }
         }
 
-        $result = [
-            'updated' => $totalUpdate,
-            'failed' => $totalFail,
-            'skipped' => $totalSkip
-        ];
-        
+        $result = ['updated' => $totalUpdate,'failed' => $totalFail,'skipped' => $totalSkip];
         return $result;
     }
 
@@ -100,11 +93,28 @@ class WurmController {
         $playerId = $this->sqlite->getPlayerIdByName($playerName);
 
         if (!$playerId) {
-            null;
+            return null;
         }
 
         $response = $this->sqlite->getSkillsByPlayerId($playerId);
-        return $this->helper->remapAllSkillsWithNames($response, $this->skillNumberMapper);
+        return $this->helper->remapAllSkillsWithNames($response);
+    }
+    
+    /**
+     * Get the internal name for the pretty names given in skill dump files.
+     * 
+     * @param string $prettyName
+     * @return string internal-name
+     */
+    public function getSkillInternalNameBySkillDumpName(string $prettyName) : array {
+        if (!$prettyName || strlen($prettyName) < 2) {
+            return null;
+        }
+        
+        return [
+            'internal-name' => $this->helper->getInternalSkillNameByPrettyName($prettyName),
+            'skill-dump-name' => $prettyName
+        ];
     }
 
     /**
