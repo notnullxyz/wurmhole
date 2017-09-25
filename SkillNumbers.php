@@ -127,12 +127,12 @@ class SkillNumbers {
         10035 => array('REPAIR', 'Repairing'),
         10036 => array('COALING', 'Coal-making'),
         10037 => array('COOKING_DAIRIES', 'Dairy food making'),
-        10038 => array('COOKING_STEAKING', ''),                         // @todo
+        10038 => array('COOKING_STEAKING', 'Hot food cooking'), // @todo is steaking = hfc?
         10039 => array('COOKING_BAKING', 'Baking'),
         10040 => array('MILLING', 'Milling'),
         10041 => array('SMITHING_METALLURGY', 'Metallurgy'),
         10042 => array('ALCHEMY_NATURAL', 'Natural substances'),
-        10043 => array('SMITHING_GOLDSMITHING', ''),                    // @todo
+        10043 => array('SMITHING_GOLDSMITHING', 'Jewelry smithing'),
         10044 => array('CARPENTRY_FINE', 'Fine carpentry'),
         10045 => array('GARDENING', 'Gardening'),
         10046 => array('SICKLE', 'Sickle'),
