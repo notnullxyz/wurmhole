@@ -106,15 +106,18 @@ class WurmController {
      * @param string $prettyName
      * @return string internal-name
      */
-    public function getSkillInternalNameBySkillDumpName(string $prettyName) : array {
+    public function getSkillInternalNameBySkillDumpName(string $prettyName) {
         if (!$prettyName || strlen($prettyName) < 2) {
             return null;
         }
         
-        return [
-            'internal-name' => $this->helper->getInternalSkillNameByPrettyName($prettyName),
+        $internalName = $this->helper->getInternalSkillNameByPrettyName($prettyName);
+        
+        return $internalName ? 
+        [
+            'internal-name' => $internalName,
             'skill-dump-name' => $prettyName
-        ];
+        ] : null;
     }
 
     /**
